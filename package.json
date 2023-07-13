@@ -6,8 +6,9 @@
   "scripts": {
     "compileless": "node ./scripts/compileLess",
     "compilepug": "node ./scripts/compilePug",
-    "dev": "nodemon --watch ./src --ext js,less,pug ./scripts/compileAll",
-    "start": "nodemon --watch ./server --ext js"
+    "serverDev": "nodemon --watch ./server --ext js",
+    "clientDev": "nodemon --watch ./src --ext js,less,pug ./scripts/compileAll",
+    "start": "node ./srver/index"
   },
   "keywords": [],
   "author": "",

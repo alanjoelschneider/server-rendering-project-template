@@ -1,33 +1,44 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-// const querystring = require("querystring");
+const { parseRoute } = require('./utils');
 
 const PORT = 8080;
 
-const server = http.createServer();
-
-// TODO: serve static content from public dir
-server.on('request', function (req, res) {
+const server = http.createServer(function (req, res) {
   const route = parseRoute(req.url);
-  if (['/', '/index.html'].includes(route)) {
-    res.statusCode = 200;
-    res.setHeader('Content-type', 'text/html');
-    res.end(getIndex());
+
+  if (route === '/') {
+    try {
+      const file = fs.readFileSync(path.join(path.dirname(__dirname), 'public', 'index.html'));
+      res.statusCode = 200;
+      res.setHeader('Content-type', 'text/html');
+      res.end(file.toString());
+    } catch (e) {
+      res.statusCode = 404;
+      res.setHeader('Content-type', 'text/plain');
+      res.end('404 not found');
+    }
   } else {
+    serveStatic('public', route, res);
+  }
+});
+
+function serveStatic(dir, route, res) {
+  const dirPath = path.join(path.dirname(__dirname), dir, route);
+
+  try {
+    const file = fs.readFileSync(dirPath).toString();
+    res.statusCode = 200;
+    if (route.endsWith('.css')) res.setHeader('Content-type', 'text/css');
+    else if (route.endsWith('.html')) res.setHeader('Content-type', 'text/html');
+    else res.setHeader('Content-type', 'text/plain');
+    res.end(file);
+  } catch (e) {
     res.statusCode = 404;
     res.setHeader('Content-type', 'text/plain');
     res.end('404 not found');
   }
-});
-
-function getIndex() {
-  const file = path.resolve(path.dirname(__dirname), 'public', 'index.html');
-  return fs.readFileSync(file).toString();
-}
-
-function parseRoute(url) {
-  return url.split('?')[0];
 }
 
 server.listen(PORT);

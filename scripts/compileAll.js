@@ -1,5 +1,5 @@
-const compilePug = require("./compilePug");
-const compileLess = require("./compileLess");
+const compilePug = require('./compilePug');
+const compileLess = require('./compileLess');
 
-compilePug();
 compileLess();
+compilePug();
